@@ -27,11 +27,14 @@
   (if (file-exists? f)
     (slurp f)))
 
+(defn read-file->edn [f]
+  (edn/read-string (read-file f)))
+
 (defn read-secrets-manager []
   (let [a (:secrets-manager-id (read-system-props))
         s (str (:user-home (read-system-props)) "/.secrets-manager/" a ".edn")]
     (if a 
-      (edn/read-string (read-file s)))))
+      (read-file->edn s))))
 
 (defn config []
   (merge 
