@@ -1,7 +1,8 @@
 (ns com.esigs.ezutils.env
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [com.esigs.ezutils.file :as file]))
 
 (defn keywordize [s]
   (when s
@@ -20,21 +21,14 @@
        (map (fn [[k v]] [(keywordize k) v]))
        (into {})))
 
-(defn file-exists? [f]
-  (.exists (io/file f)))
-
-(defn read-file [f]
-  (if (file-exists? f)
-    (slurp f)))
-
 (defn read-file->edn [f]
-  (edn/read-string (read-file f)))
+  (edn/read-string (file/read-file f)))
 
 (defn read-secrets-manager []
   (let [a (:secrets-manager-id (read-system-props))
         s (str (:user-home (read-system-props)) "/.secrets-manager/" a ".edn")]
     (if a 
-      (read-file->edn s))))
+      (file/read-file->edn s))))
 
 (defn config []
   (merge 
